@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error</title>
+    <script src="data-handler.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background-color: #fff;
+            padding: 20px 30px;
+            box-sizing: border-box;
+            position: relative;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .header .icon {
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+        .error-message {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        .back-icon {
+            font-size: 36px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .error-icon {
+            display: block;
+            margin: 0 auto 30px auto;
+            width: 120px;
+            height: 120px;
+            color: #ff4444;
+            font-size: 80px;
+            text-align: center;
+            position: relative;
+        }
+        .error-icon svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 0 0 rgba(255, 68, 68, 0));
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% {
+                filter: drop-shadow(0 0 0 rgba(255, 68, 68, 0));
+            }
+            50% {
+                filter: drop-shadow(0 0 15px rgb(255, 0, 0));
+            }
+            100% {
+                filter: drop-shadow(0 0 0 rgba(255, 68, 68, 0));
+            }
+        }
+        .retry-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: #673ab7;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            text-align: center;
+            text-decoration: none;
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease;
+            position: relative;
+        }
+        .retry-button:hover {
+            background-color: #5e35b1;
+        }
+        .retry-button:active {
+            transform: translateY(4px) scale(0.98);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .retry-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            transform: translateZ(-1px);
+            transition: transform 0.1s ease;
+        }
+        .retry-button:active::before {
+            transform: translateZ(-2px);
+        }
+        .content {
+            padding: 0 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="icon back-icon">&#x21E6;</div>
+        </div>
+        <div class="content">
+            <div class="error-icon">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    <path d="M12 8V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 16H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <div class="title">Terjadi Kesalahan</div>
+            <div class="error-message">
+                Maaf, terjadi kesalahan saat memproses permintaan Anda. Silakan coba lagi dan kirim ulang OTP.
+            </div>
+            <a href="otp.html" class="retry-button">Coba Lagi</a>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Back button functionality
+            const backButton = document.querySelector('.back-icon');
+            backButton.addEventListener('click', function() {
+                window.history.back();
+            });
+        });
+    </script>
+</body>
+</html> 

